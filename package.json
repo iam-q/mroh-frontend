@@ -1,25 +1,48 @@
 {
-  "name": "mroh-frontend",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier --write ."
   },
   "dependencies": {
+    "@date-io/date-fns": "^3.2.1",
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11",
+    "@emotion/styled": "^11",
+    "@mui/icons-material": "^6.4.8",
+    "@mui/material": "^6.4.8",
+    "@mui/material-nextjs": "^6.4.3",
+    "@mui/x-date-pickers": "^8.5.0",
+    "@mui/x-date-pickers-pro": "^8.5.0",
+    "@react-oauth/google": "^0.12.1",
+    "@toolpad/core": "^0.13.0",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^6.5.1",
+    "jose": "^6.0.10",
+    "jwt-decode": "^4.0.0",
+    "next": "15.2.2",
+    "prettier": "^3.5.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.2.2"
+    "three": "^0.174.0",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.174.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4.0.14",
+    "typescript": "^5"
   }
 }
