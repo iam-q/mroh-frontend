@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const SignupPage = () => {
   const [username, setUsername] = useState("");
@@ -24,36 +25,37 @@ const SignupPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     if (password !== confirmPassword) {
       setError("Passwords don't match!");
       return;
     }
     setError(null);
 
-    // Manual sign-up: Send username, email, and password to the backend
     console.log("Signing up manually with:", username, email, password);
-    // Send to backend: POST /auth/signup (manual sign-up)
-  };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
-    const token = credentialResponse?.credential;
-    if (!token) return;
+    try {
+      const url = "http://localhost:8080/user/signup";
+      const response = await fetch(url, {
+        method: "POST", // You forgot this!
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ username, email, password }),
+      });
 
-    // You could send this token to your backend here instead!
-    const decoded = JSON.parse(atob(token.split(".")[1]));
-    console.log("Google User Info:", decoded);
-    // Google OAuth success: Send the Google token to your backend
-    console.log("Google Sign-Up Token:", token);
-
-    // You could send this token to your backend to handle the registration process:
-    // Backend will decide whether to create a new user or link it to an existing one.
-    // Send token to backend (e.g., POST /auth/signup/google)
-  };
-
-  const handleGoogleError = () => {
-    console.error("Google Sign Up failed");
+      if (!response.ok) {
+        const errorText = await response.text(); // optional: read error body
+        throw new Error(`Signup failed. Status: ${response.status}, Message: ${errorText}`);
+      }
+      router.push("/login");
+    } catch (err) {
+      console.error("Signup error:", err);
+      setError("Signup failed. Please try again.");
+    }
   };
 
   return (

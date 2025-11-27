@@ -47,7 +47,7 @@ export default function HomePage() {
     if (!query.trim()) return;
 
     const encoded = encodeURIComponent(query.trim());
-    router.push(`/chat?query=${encoded}`);
+    router.push(`/chat?content=${encoded}`);
   };
 
   useEffect(() => {

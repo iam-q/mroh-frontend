@@ -46,7 +46,7 @@ export default function CardContainer({ shrink }: CardContainer) {
     }
 
     const encodedQuery = encodeURIComponent(query);
-    router.push(`/chat?query=${encodedQuery}`);
+    router.push(`/chat?content=${encodedQuery}`);
   }
 
   return (

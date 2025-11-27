@@ -1,87 +1,196 @@
 "use client";
 
 import Box from "@mui/material/Box";
-import Grid2 from "@mui/material/Grid2"; // sometimes imported from here
-import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import Grid2 from "@mui/material/Grid2";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
 import CardContainer from "../components/CardContainer";
 import ChatInput from "../components/ChatInput";
 import ChatPanel, { Message } from "../components/ChatPanel";
 import { ChatPanelWrapper } from "../components/ChatPanel/ChatPanelWrapper";
 import Memoji from "../components/Memoji";
 import QuickChatToggle from "../components/QuickChatToggle";
+import { motion } from "framer-motion";
+
+export function TypingBubble() {
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 0.5,
+        px: 2,
+        py: 1,
+        borderRadius: 2,
+        backgroundColor: "#f0f0f0",
+        width: "fit-content",
+      }}
+    >
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          animate={{ opacity: [0.2, 1, 0.2] }}
+          transition={{
+            duration: 1.2,
+            repeat: Infinity,
+            delay: i * 0.2,
+          }}
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: "50%",
+            backgroundColor: "#555",
+            display: "inline-block",
+          }}
+        />
+      ))}
+    </Box>
+  );
+}
 
 export default function ChatPage() {
   const searchParams = useSearchParams();
+
+  const [isClient, setIsClient] = useState(false);
   const [showQuickQuestions, setShowQuickQuestions] = useState(true);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const lastFetchedQueryRef = useRef<string | null>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
+  const streamingContentRef = useRef<string>("");
+  const throttledUpdate = useRef<NodeJS.Timeout | null>(null);
+  const assistantMessageIdRef = useRef<string | null>(null);
+
   const handleClick = () => setShowQuickQuestions(!showQuickQuestions);
   const headerHeight = 100;
   const footerHeight = showQuickQuestions ? 230 : 100;
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [query, setQuery] = useState("");
-  const lastFetchedQueryRef = useRef<string | null>(null);
 
-  const sendQuery = async (
-    userText: string,
-    options?: { skipUserMessage?: boolean },
-  ) => {
-    if (!userText.trim()) return;
+  // ✅ Mark as client-ready (ensures hydration complete)
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
-    if (!options?.skipUserMessage) {
-      const userMessage: Message = { role: "user", content: userText };
-      setMessages((prev) => [...prev, userMessage]);
-    }
+  const sendQuery = useCallback((userText: string) => {
+    const trimmed = userText.trim();
+    if (!trimmed) return;
 
-    try {
-      const res = await fetch("http://localhost:8080/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ role: "user", content: userText }),
-      });
+    console.log("sendQuery called with:", trimmed);
 
-      const data = await res.json();
-      const assistantMessage: Message = {
-        role: "assistant",
-        content: data.response || "No response",
-      };
+    streamingContentRef.current = "";
+    setIsLoading(true);
 
-      if (options?.skipUserMessage) {
-        // If we're skipping user message (e.g. from useEffect), overwrite both messages
-        setMessages([{ role: "user", content: userText }, assistantMessage]);
-      } else {
-        // Normal flow — just append assistant response
-        setMessages((prev) => [...prev, assistantMessage]);
+    const assistantId = `assistant-${Date.now()}`;
+    assistantMessageIdRef.current = assistantId;
+
+    setMessages((prev) => [
+      ...prev,
+      { role: "user" as const, content: trimmed, id: `user-${Date.now()}` },
+      { role: "assistant" as const, content: "", id: assistantId },
+    ]);
+
+    const url = `http://localhost:8080/chat?role=user&content=${encodeURIComponent(
+      userText
+    )}`;
+    const eventSource = new EventSource(url, { withCredentials: true });
+    eventSourceRef.current = eventSource;
+
+    eventSource.onmessage = (event) => {
+      if (event.data === "[DONE]") {
+        if (throttledUpdate.current) {
+          clearTimeout(throttledUpdate.current);
+          throttledUpdate.current = null;
+        }
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantId
+              ? { ...msg, content: streamingContentRef.current }
+              : msg
+          )
+        );
+        eventSource.close();
+        setIsLoading(false);
+        assistantMessageIdRef.current = null;
+        return;
       }
-    } catch (err) {
-      console.error("Error fetching response:", err);
-      const fallback: Message = {
-        role: "assistant",
-        content: "Error loading response",
-      };
 
-      if (options?.skipUserMessage) {
-        setMessages([{ role: "user", content: userText }, fallback]);
-      } else {
-        setMessages((prev) => [...prev, fallback]);
+      if (event.data.startsWith("[ERROR]")) {
+        streamingContentRef.current += "\n" + event.data;
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantId
+              ? { ...msg, content: streamingContentRef.current }
+              : msg
+          )
+        );
+        eventSource.close();
+        setIsLoading(false);
+        assistantMessageIdRef.current = null;
+        return;
       }
-    }
-  };
+
+      streamingContentRef.current += event.data;
+
+      if (throttledUpdate.current) clearTimeout(throttledUpdate.current);
+
+      throttledUpdate.current = setTimeout(() => {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === assistantId
+              ? { ...msg, content: streamingContentRef.current }
+              : msg
+          )
+        );
+      }, 50);
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE error", err);
+      if (throttledUpdate.current) clearTimeout(throttledUpdate.current);
+      eventSource.close();
+
+      streamingContentRef.current += "\n[Error receiving stream]";
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantId
+            ? { ...msg, content: streamingContentRef.current }
+            : msg
+        )
+      );
+
+      setIsLoading(false);
+      assistantMessageIdRef.current = null;
+    };
+
+    eventSource.onopen = () => console.log("SSE connection opened");
+  }, []);
 
   const handleSearch = () => {
-    sendQuery(query);
+    const currentQuery = query.trim();
+    if (!currentQuery) return;
     setQuery("");
+    sendQuery(currentQuery);
   };
 
+  // ✅ Fixed: run only after client hydration
   useEffect(() => {
-    const userQuery = searchParams.get("query");
+    if (!isClient) return;
+
+    const userQuery = searchParams.get("content");
+    console.log("useEffect triggered, userQuery:", userQuery);
 
     if (userQuery && userQuery !== lastFetchedQueryRef.current) {
       lastFetchedQueryRef.current = userQuery;
-      setQuery(userQuery); // optional: populate input
-      sendQuery(userQuery, { skipUserMessage: true });
+      console.log("Calling sendQuery from useEffect");
+      sendQuery(userQuery);
     }
-  }, [searchParams]);
+
+    return () => {
+      if (throttledUpdate.current) clearTimeout(throttledUpdate.current);
+      if (eventSourceRef.current) eventSourceRef.current.close();
+    };
+  }, [isClient, searchParams, sendQuery]);
 
   return (
     <Grid2
@@ -99,7 +208,6 @@ export default function ChatPage() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-
           flexShrink: 0,
           zIndex: 10,
           mb: 5,
@@ -107,17 +215,13 @@ export default function ChatPage() {
       >
         <Memoji width={100} />
       </Grid2>
-      <Box
-        sx={{
-          flexGrow: 1,
-          overflowY: "auto",
-          mx: 40,
-        }}
-      >
+
+      <Box sx={{ flexGrow: 1, overflowY: "auto", mx: 10 }}>
         <ChatPanelWrapper>
-          <ChatPanel messages={messages} />
+          <ChatPanel isLoading={isLoading} messages={messages} />
         </ChatPanelWrapper>
       </Box>
+
       <Grid2
         component="div"
         sx={{
