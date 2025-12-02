@@ -16,8 +16,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const SignupPage = () => {
   const [username, setUsername] = useState("");
@@ -49,7 +49,9 @@ const SignupPage = () => {
 
       if (!response.ok) {
         const errorText = await response.text(); // optional: read error body
-        throw new Error(`Signup failed. Status: ${response.status}, Message: ${errorText}`);
+        throw new Error(
+          `Signup failed. Status: ${response.status}, Message: ${errorText}`,
+        );
       }
       router.push("/login");
     } catch (err) {

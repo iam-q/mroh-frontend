@@ -2,7 +2,8 @@
 
 import Box from "@mui/material/Box";
 import Grid2 from "@mui/material/Grid2";
-import { useRouter, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import CardContainer from "../components/CardContainer";
 import ChatInput from "../components/ChatInput";
@@ -10,7 +11,6 @@ import ChatPanel, { Message } from "../components/ChatPanel";
 import { ChatPanelWrapper } from "../components/ChatPanel/ChatPanelWrapper";
 import Memoji from "../components/Memoji";
 import QuickChatToggle from "../components/QuickChatToggle";
-import { motion } from "framer-motion";
 
 export function TypingBubble() {
   return (
@@ -91,10 +91,12 @@ export default function ChatPage() {
     ]);
 
     const url = `http://localhost:8080/chat?role=user&content=${encodeURIComponent(
-      userText
+      userText,
     )}`;
     const eventSource = new EventSource(url, { withCredentials: true });
     eventSourceRef.current = eventSource;
+
+    const throttleInterval = 10;
 
     eventSource.onmessage = (event) => {
       if (event.data === "[DONE]") {
@@ -106,8 +108,8 @@ export default function ChatPage() {
           prev.map((msg) =>
             msg.id === assistantId
               ? { ...msg, content: streamingContentRef.current }
-              : msg
-          )
+              : msg,
+          ),
         );
         eventSource.close();
         setIsLoading(false);
@@ -121,8 +123,8 @@ export default function ChatPage() {
           prev.map((msg) =>
             msg.id === assistantId
               ? { ...msg, content: streamingContentRef.current }
-              : msg
-          )
+              : msg,
+          ),
         );
         eventSource.close();
         setIsLoading(false);
@@ -132,17 +134,19 @@ export default function ChatPage() {
 
       streamingContentRef.current += event.data;
 
+      // Clear previous timeout if any
       if (throttledUpdate.current) clearTimeout(throttledUpdate.current);
 
+      // Schedule next update with throttleInterval
       throttledUpdate.current = setTimeout(() => {
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === assistantId
               ? { ...msg, content: streamingContentRef.current }
-              : msg
-          )
+              : msg,
+          ),
         );
-      }, 50);
+      }, throttleInterval);
     };
 
     eventSource.onerror = (err) => {
@@ -155,8 +159,8 @@ export default function ChatPage() {
         prev.map((msg) =>
           msg.id === assistantId
             ? { ...msg, content: streamingContentRef.current }
-            : msg
-        )
+            : msg,
+        ),
       );
 
       setIsLoading(false);

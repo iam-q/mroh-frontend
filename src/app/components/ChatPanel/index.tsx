@@ -25,12 +25,16 @@ export default function ChatPanel({ messages, isLoading }: ChatPanelProps) {
   }, [messages, isLoading]);
 
   return (
-    <Box sx={{ width: "100%", px: 2, height: "100%", overflowY: "auto", mb: 2 }}>
+    <Box
+      sx={{ width: "100%", px: 2, height: "100%", overflowY: "auto", mb: 2 }}
+    >
       {messages.map((msg, i) => {
-        const showTyping = isLoading && i === messages.length - 1 && msg.role === "assistant";
+        const showTyping =
+          isLoading && i === messages.length - 1 && msg.role === "assistant";
 
         // Don't render completely empty assistant messages
-        if (msg.role === "assistant" && msg.content === "" && !showTyping) return null;
+        if (msg.role === "assistant" && msg.content === "" && !showTyping)
+          return null;
 
         return (
           <Box
