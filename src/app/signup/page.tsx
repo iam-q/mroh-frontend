@@ -5,6 +5,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   CssBaseline,
   Divider,
   FormControl,
@@ -24,6 +25,7 @@ const SignupPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -37,6 +39,7 @@ const SignupPage = () => {
     console.log("Signing up manually with:", username, email, password);
 
     try {
+      setIsLoading(true);
       const url = "http://localhost:8080/user/signup";
       const response = await fetch(url, {
         method: "POST", // You forgot this!
@@ -53,9 +56,11 @@ const SignupPage = () => {
           `Signup failed. Status: ${response.status}, Message: ${errorText}`,
         );
       }
+      setIsLoading(false);
       router.push("/login");
     } catch (err) {
       console.error("Signup error:", err);
+      setIsLoading(false);
       setError("Signup failed. Please try again.");
     }
   };
@@ -188,7 +193,7 @@ const SignupPage = () => {
                 },
               }}
             >
-              Sign Up
+              {isLoading ? <CircularProgress size={24} sx={{ color: "white"}}/> : "Sign Up"}
             </Button>
           </Grid2>
 

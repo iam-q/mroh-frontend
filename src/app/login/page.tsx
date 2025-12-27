@@ -15,6 +15,7 @@ import {
   Link,
   Paper,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 // import { GoogleLogin } from "@react-oauth/google";
 // import { decodeJwt } from "jose";
@@ -33,10 +34,12 @@ import React, { useState } from "react";
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   async function manualLogin(email: string, password: string) {
+    setIsLoading(true);
     const url = "http://localhost:8080/user/login";
 
     try {
@@ -54,9 +57,11 @@ const LoginPage = () => {
       }
 
       const data = await response.json();
+      setIsLoading(false);
       return data.token;
     } catch (error: any) {
       console.error("Login failed:", error.message);
+      setIsLoading(false);
       throw error;
     }
   }
@@ -90,6 +95,7 @@ const LoginPage = () => {
       const userProfile = await fetchProfile();
       useProfileStore.getState().setProfile(userProfile);
 
+      setIsLoading(false);
       router.push("/");
     } catch (err: any) {
       console.error("Login or profile fetch failed:", err);
@@ -175,8 +181,9 @@ const LoginPage = () => {
                     backgroundColor: "primary.dark",
                   },
                 }}
+                disabled={isLoading}
               >
-                Login
+                {isLoading ? <CircularProgress size={24} sx={{ color: "white"}}/> : "Login"}
               </Button>
             </Grid2>
             <Grid2 sx={{ width: "100%", mt: 2, textAlign: "center" }}>
