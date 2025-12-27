@@ -236,9 +236,7 @@ export default function ChatPanel({ messages, isLoading }: ChatPanelProps) {
   }, [messages, isLoading]);
 
   return (
-    <Box
-      sx={{ width: "100%", px: 2, height: "100%", overflowY: "auto", mb: 2 }}
-    >
+    <Box sx={{ width: "100%", height: "100%", mb: 2 }}>
       {messages.map((msg, i) => {
         const showTyping =
           isLoading && i === messages.length - 1 && msg.role === "assistant";

@@ -5,10 +5,12 @@ import Button from "@mui/material/Button";
 type QuickChatToggleProps = {
   show: boolean;
   handleClick: () => void;
+  disabled?: boolean;
 };
 export default function QuickChatToggle({
   show,
   handleClick,
+  disabled = false,
 }: QuickChatToggleProps) {
   return (
     <Box
@@ -17,20 +19,25 @@ export default function QuickChatToggle({
         gap: 1,
         alignItems: "center",
         justifyContent: "center",
-        cursor: "pointer",
+        cursor: disabled ? "not-allowed" : "pointer",
         mb: show ? 2 : 0,
         width: "fit-content",
         mx: "auto",
+        opacity: disabled ? 0.5 : 1,
+        pointerEvents: disabled ? "none" : "auto",
       }}
-      onClick={handleClick}
+      onClick={disabled ? undefined : handleClick}
     >
       <KeyboardArrowDownIcon
         sx={{
           transform: show ? "rotate(180deg)" : "none",
           transition: "transform 0.3s",
+          color: disabled ? "#9a9a9a" : "inherit",
         }}
       />
-      <Button>{show ? "Hide quick questions" : "Show quick questions"}</Button>
+      <Button disabled={disabled}>
+        {show ? "Hide quick questions" : "Show quick questions"}
+      </Button>
     </Box>
   );
 }

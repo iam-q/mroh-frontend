@@ -12,6 +12,7 @@ type ChatInput = {
   query: string;
   setQuery: (value: string) => void;
   onSearch: () => void;
+  disabled?: boolean;
 };
 
 export default function ChatInput({
@@ -19,6 +20,7 @@ export default function ChatInput({
   query,
   setQuery,
   onSearch,
+  disabled = false,
 }: ChatInput) {
   const theme = useTheme();
 
@@ -29,6 +31,7 @@ export default function ChatInput({
         placeholder="Ask me anything..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        disabled={disabled}
         variant="outlined"
         size="medium"
         sx={{
@@ -44,17 +47,24 @@ export default function ChatInput({
                 aria-label="ask question"
                 onClick={onSearch}
                 edge="end"
-                disabled={!query.trim()}
+                disabled={disabled || !query.trim()}
                 sx={{
                   borderRadius: "50%",
                   width: 36,
                   height: 36,
-                  bgcolor: query.trim() ? theme.palette.primary.main : "#ccc",
-                  color: query.trim()
-                    ? theme.palette.primary.contrastText
-                    : "#666",
+                  bgcolor:
+                    disabled || !query.trim()
+                      ? "#ccc"
+                      : theme.palette.primary.main,
+                  color:
+                    disabled || !query.trim()
+                      ? "#666"
+                      : theme.palette.primary.contrastText,
                   "&:hover": {
-                    bgcolor: query.trim() ? theme.palette.primary.dark : "#bbb",
+                    bgcolor:
+                      disabled || !query.trim()
+                        ? "#bbb"
+                        : theme.palette.primary.dark,
                   },
                 }}
               >
@@ -64,6 +74,7 @@ export default function ChatInput({
           ),
         }}
         onKeyDown={(e) => {
+          if (disabled) return;
           if (e.key === "Enter" && query.trim()) {
             onSearch();
           }

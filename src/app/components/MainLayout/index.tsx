@@ -39,11 +39,19 @@ export default function MainLayout({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+        height: "100vh",
+        overflow: "hidden",
+      }}
+    >
       <CssBaseline />
 
       {/* Drawer and main content wrapper */}
-      <Box sx={{ display: "flex", flexGrow: 1 }}>
+      <Box sx={{ display: "flex", flexGrow: 1, overflow: "hidden" }}>
         {/* Drawer */}
         <Drawer
           variant="persistent"

@@ -4,7 +4,14 @@ import { Box, keyframes, Typography } from "@mui/material";
 
 import { motion, MotionProps } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { forwardRef, HTMLAttributes, useEffect, useRef, useState } from "react";
+import {
+  forwardRef,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import CardContainer from "./components/CardContainer";
 import ChatInput from "./components/ChatInput";
 import CursorEffect from "./components/CursorEffect";
@@ -32,6 +39,8 @@ const wave = keyframes`
 // Page
 export default function HomePage() {
   const [query, setQuery] = useState("");
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const chatsDisabled = remaining !== null && remaining <= 0;
   const router = useRouter();
   const dotsRef = useRef<(HTMLDivElement | null)[]>(Array(NUM_DOTS).fill(null));
 
@@ -44,11 +53,27 @@ export default function HomePage() {
   };
 
   const handleSearch = () => {
+    if (chatsDisabled) return;
     if (!query.trim()) return;
 
     const encoded = encodeURIComponent(query.trim());
     router.push(`/chat?content=${encoded}`);
   };
+
+  const fetchRemaining = useCallback(() => {
+    fetch("http://localhost:8080/chat/remaining", {
+      credentials: "include",
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && typeof data.remaining === "number") {
+          setRemaining(data.remaining);
+        }
+      })
+      .catch(() => {
+        // Ignore remaining lookup errors
+      });
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -88,6 +113,10 @@ export default function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    fetchRemaining();
+  }, [fetchRemaining]);
+
   return (
     <>
       <Box
@@ -97,7 +126,7 @@ export default function HomePage() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          gap: 5,
+          gap: 2,
           px: 2,
         }}
       >
@@ -140,9 +169,18 @@ export default function HomePage() {
           query={query}
           setQuery={setQuery}
           onSearch={handleSearch}
+          disabled={chatsDisabled}
         />
         {/* Cards container */}
         <CardContainer shrink={false} />
+        {remaining !== null && (
+          <Typography
+            variant="caption"
+            sx={{ display: "block", textAlign: "center", color: "#6b6b6b" }}
+          >
+            Remaining messages: {remaining}
+          </Typography>
+        )}
       </Box>
       {/* Dots */}
       <CursorEffect setDotRef={setDotRef} />
