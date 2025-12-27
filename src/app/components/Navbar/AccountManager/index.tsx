@@ -106,7 +106,6 @@ export function AccountManager() {
                   fontSize: "0.95rem",
                   bgcolor: "#1976d2",
                 }}
-                // src={account.image}
               >
                 {avatarInitial}
               </Avatar>

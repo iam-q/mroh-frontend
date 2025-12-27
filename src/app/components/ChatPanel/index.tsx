@@ -168,7 +168,11 @@ function AssistantMarkdown({ content }: { content: string }) {
             </Typography>
           </Box>
         ),
-        code: ({ inline, children }) => {
+        code: (props) => {
+          const { inline, children } = props as {
+            inline?: boolean;
+            children: React.ReactNode;
+          };
           if (inline) {
             return (
               <Box

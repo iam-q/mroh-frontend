@@ -102,7 +102,7 @@ export default function MainLayout({
                   sx={{
                     fontWeight: 700,
                     letterSpacing: 1,
-                    fontSize: "1rem",
+                    fontSize: "1.2rem",
                   }}
                 >
                   MR&lt;/&gt;H
