@@ -1,9 +1,8 @@
 "use client";
 
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import HomeIcon from "@mui/icons-material/Home";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
-  Box,
   Divider,
   IconButton,
   List,
@@ -12,11 +11,8 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
-  Typography,
 } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
-import { AccountManager } from "../AccountManager";
-
 type DrawerContentType = {
   open: boolean;
   handleDrawerToggle: () => void;
@@ -33,23 +29,30 @@ export default function DrawerContent({
       <Toolbar
         sx={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: open ? "flex-start" : "center",
           alignItems: "center",
+          px: open ? 2.5 : 0,
         }}
       >
-        {/* Logo */}
-        <Typography fontWeight="bold" fontSize={30}>
-          MR&lt;/&gt;H
-        </Typography>
-
-        {/* ChevronLeftIcon */}
-        <IconButton onClick={handleDrawerToggle}>
-          <ChevronLeftIcon sx={{ color: "white" }} />
+        <IconButton
+          onClick={handleDrawerToggle}
+          size="small"
+          sx={{
+            color: "white",
+            backgroundColor: "#1a1a1a",
+            "&:hover": { backgroundColor: "#222222" },
+            p: 0,
+            width: 24,
+            height: 24,
+            ml: open ? -0.5 : 0,
+          }}
+        >
+          <MenuIcon />
         </IconButton>
       </Toolbar>
 
       <Divider />
-      <List>
+      <List sx={{ px: 0 }}>
         {[
           {
             text: "Home",
@@ -69,12 +72,17 @@ export default function DrawerContent({
           // { text: "Apps", icon: <AppsIcon />, path: "/apps" },
           // { text: "Store", icon: <StoreIcon />, path: "/store" },
         ].map((item) => (
-          <ListItem key={item.text} disablePadding sx={{ display: "block" }}>
+          <ListItem
+            key={item.text}
+            disablePadding
+            sx={{ display: "flex", justifyContent: "center" }}
+          >
             <ListItemButton
               sx={{
                 minHeight: 48,
-                justifyContent: open ? "initial" : "center",
-                px: 2.5,
+                justifyContent: open ? "flex-start" : "center",
+                px: open ? 2.5 : 0,
+                width: "100%",
               }}
               selected={item.path === pathname}
               onClick={() => router.push(item.path)}
@@ -82,8 +90,10 @@ export default function DrawerContent({
               <ListItemIcon
                 sx={{
                   minWidth: 0,
-                  mr: open ? 3 : "auto",
+                  mr: open ? 2 : 0,
+                  width: 24,
                   justifyContent: "center",
+                  display: "flex",
                 }}
               >
                 {item.icon}
@@ -92,35 +102,6 @@ export default function DrawerContent({
             </ListItemButton>
           </ListItem>
         ))}
-      </List>
-
-      {/* Add Cart on the bottom above the account avatar */}
-      <Box sx={{ flexGrow: 1 }} />
-
-      <List>
-        <ListItem disablePadding sx={{ display: "block" }}>
-          <AccountManager />
-          {/* <ListItemButton
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? "initial" : "center",
-              px: 2.5,
-            }}
-            selected={pathname === "/cart"}
-            onClick={() => router.push("/cart")}
-          >
-            <ListItemIcon
-              sx={{
-                minWidth: 0,
-                mr: open ? 3 : "auto",
-                justifyContent: "center",
-              }}
-            >
-              <ShoppingCartIcon />
-            </ListItemIcon>
-            {open && <ListItemText primary="Cart" />}
-          </ListItemButton> */}
-        </ListItem>
       </List>
     </>
   );

@@ -20,6 +20,8 @@ export function AccountManager() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const router = useRouter();
   const profile = useProfileStore((state) => state.profile);
+  const avatarInitial =
+    profile?.username?.trim()?.charAt(0)?.toUpperCase() ?? "?";
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -60,15 +62,20 @@ export function AccountManager() {
   const open = Boolean(anchorEl);
 
   return (
-    <Box sx={{ p: 2 }}>
+    <Box sx={{ p: 0, display: "flex", alignItems: "center" }}>
       <Box display="flex" justifyContent="start">
-        <IconButton onClick={handleClick}>
+        <IconButton onClick={handleClick} size="small">
           <Avatar
             alt={profile?.username}
             // src={[0].image}
-            sx={{ bgcolor: "#1976d2" }}
+            sx={{
+              bgcolor: "#1976d2",
+              width: 32,
+              height: 32,
+              fontSize: "0.9rem",
+            }}
           >
-            {profile?.username}
+            {avatarInitial}
           </Avatar>
         </IconButton>
       </Box>
@@ -101,7 +108,7 @@ export function AccountManager() {
                 }}
                 // src={account.image}
               >
-                {profile?.username}
+                {avatarInitial}
               </Avatar>
               <Box>
                 <Typography variant="body2">{profile?.username}</Typography>

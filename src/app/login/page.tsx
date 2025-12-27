@@ -6,6 +6,7 @@ import {
   Avatar,
   Box,
   Button,
+  CircularProgress,
   CssBaseline,
   FormControl,
   FormHelperText,
@@ -15,7 +16,6 @@ import {
   Link,
   Paper,
   Typography,
-  CircularProgress,
 } from "@mui/material";
 // import { GoogleLogin } from "@react-oauth/google";
 // import { decodeJwt } from "jose";
@@ -183,7 +183,11 @@ const LoginPage = () => {
                 }}
                 disabled={isLoading}
               >
-                {isLoading ? <CircularProgress size={24} sx={{ color: "white"}}/> : "Login"}
+                {isLoading ? (
+                  <CircularProgress size={24} sx={{ color: "white" }} />
+                ) : (
+                  "Login"
+                )}
               </Button>
             </Grid2>
             <Grid2 sx={{ width: "100%", mt: 2, textAlign: "center" }}>

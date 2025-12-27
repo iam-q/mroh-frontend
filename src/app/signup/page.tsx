@@ -193,7 +193,11 @@ const SignupPage = () => {
                 },
               }}
             >
-              {isLoading ? <CircularProgress size={24} sx={{ color: "white"}}/> : "Sign Up"}
+              {isLoading ? (
+                <CircularProgress size={24} sx={{ color: "white" }} />
+              ) : (
+                "Sign Up"
+              )}
             </Button>
           </Grid2>
 
