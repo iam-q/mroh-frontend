@@ -350,7 +350,6 @@ export default function ChatPage() {
         open={limitReached}
         onClose={() => setLimitReached(false)}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        disablePortal
         sx={{ position: "absolute" }}
       >
         <Alert severity="warning" sx={{ width: "100%" }}>
