@@ -1,5 +1,8 @@
 replicaCount: 1
 
+deployment:
+  namespace: mroh
+  
 app:
   name: frontend
   image:
