@@ -85,8 +85,6 @@ export default function ChatPageClient() {
       const url = apiUrl(
         `/chat?role=user&content=${encodeURIComponent(userText)}`,
       );
-        userText,
-      )}`;
       const eventSource = new EventSource(url, { withCredentials: true });
       eventSourceRef.current = eventSource;
 
