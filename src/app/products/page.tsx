@@ -16,6 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { apiUrl } from "../utils/api";
 
 const COLOR_IMAGE_MAP: Record<string, string> = {
   black: "https://aersf.com/cdn/shop/files/Black.png?v=1686201902",
@@ -52,7 +53,7 @@ export default function ProductsPage() {
   };
 
   async function fetchProducts() {
-    const url = "http://localhost:8080/products";
+    const url = apiUrl("/products");
     const response = await fetch(url, {
       credentials: "include",
     });

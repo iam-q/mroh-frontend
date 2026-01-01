@@ -12,6 +12,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { apiUrl } from "./utils/api";
 import CardContainer from "./components/CardContainer";
 import ChatInput from "./components/ChatInput";
 import CursorEffect from "./components/CursorEffect";
@@ -61,7 +62,7 @@ export default function HomePage() {
   };
 
   const fetchRemaining = useCallback(() => {
-    fetch("http://localhost:8080/chat/remaining", {
+    fetch(apiUrl("/chat/remaining"), {
       credentials: "include",
     })
       .then((res) => (res.ok ? res.json() : null))

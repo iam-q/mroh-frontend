@@ -1,6 +1,7 @@
 "use client";
 
 import { useProfileStore } from "@/app/utils/store/profileStore";
+import { apiUrl } from "@/app/utils/api";
 import { Logout } from "@mui/icons-material";
 import {
   Avatar,
@@ -33,7 +34,7 @@ export function AccountManager() {
 
   async function logout() {
     try {
-      const response = await fetch("http://localhost:8080/user/logout", {
+      const response = await fetch(apiUrl("/user/logout"), {
         method: "POST",
         credentials: "include",
       });

@@ -13,6 +13,7 @@ import ChatPanel, { Message } from "../components/ChatPanel";
 import { ChatPanelWrapper } from "../components/ChatPanel/ChatPanelWrapper";
 import Memoji from "../components/Memoji";
 import QuickChatToggle from "../components/QuickChatToggle";
+import { apiUrl } from "../utils/api";
 
 export default function ChatPageClient() {
   const searchParams = useSearchParams();
@@ -43,7 +44,7 @@ export default function ChatPageClient() {
 
   const fetchRemaining = useCallback(async () => {
     try {
-      const res = await fetch("http://localhost:8080/chat/remaining", {
+      const res = await fetch(apiUrl("/chat/remaining"), {
         credentials: "include",
       });
       if (!res.ok) return null;
@@ -81,7 +82,9 @@ export default function ChatPageClient() {
         { role: "assistant" as const, content: "", id: assistantId },
       ]);
 
-      const url = `http://localhost:8080/chat?role=user&content=${encodeURIComponent(
+      const url = apiUrl(
+        `/chat?role=user&content=${encodeURIComponent(userText)}`,
+      );
         userText,
       )}`;
       const eventSource = new EventSource(url, { withCredentials: true });

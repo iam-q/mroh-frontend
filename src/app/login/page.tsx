@@ -20,6 +20,7 @@ import {
 // import { GoogleLogin } from "@react-oauth/google";
 // import { decodeJwt } from "jose";
 import { useRouter } from "next/navigation";
+import { apiUrl } from "../utils/api";
 import React, { useState } from "react";
 
 // interface GoogleJWT {
@@ -40,7 +41,7 @@ const LoginPage = () => {
 
   async function manualLogin(email: string, password: string) {
     setIsLoading(true);
-    const url = "http://localhost:8080/user/login";
+    const url = apiUrl("/user/login");
 
     try {
       const response = await fetch(url, {
@@ -67,7 +68,7 @@ const LoginPage = () => {
   }
 
   async function fetchProfile() {
-    const url = "http://localhost:8080/user/profile";
+    const url = apiUrl("/user/profile");
     const response = await fetch(url, {
       credentials: "include",
     });

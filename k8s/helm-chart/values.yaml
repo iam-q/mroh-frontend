@@ -7,6 +7,8 @@ app:
     tag: latest
     pullPolicy: IfNotPresent
   port: 3000
+  env:
+    NEXT_PUBLIC_API_BASE: http://mroh-data-service.mroh.svc.cluster.local
 
 service:
   type: ClusterIP

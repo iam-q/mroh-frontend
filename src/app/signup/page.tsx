@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { apiUrl } from "../utils/api";
 
 const SignupPage = () => {
   const [username, setUsername] = useState("");
@@ -40,7 +41,7 @@ const SignupPage = () => {
 
     try {
       setIsLoading(true);
-      const url = "http://localhost:8080/user/signup";
+      const url = apiUrl("/user/signup");
       const response = await fetch(url, {
         method: "POST", // You forgot this!
         headers: {
