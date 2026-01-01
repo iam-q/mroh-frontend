@@ -99,7 +99,7 @@ export default function ProductsPage() {
       fetchProducts()
         .then((data) => {
           setProducts(data);
-          setSelectedIds(data.slice(0, 3).map((p) => p.id));
+          setSelectedIds(data.slice(0, 3).map((p: any) => p.id));
         })
         .catch((e) => {
           console.error("Error fetching products:", e);

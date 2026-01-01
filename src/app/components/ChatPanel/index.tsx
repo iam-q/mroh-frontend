@@ -1,6 +1,6 @@
 "use client";
 
-import { TypingBubble } from "@/app/chat/page";
+import { TypingBubble } from "@/app/components/TypingBubble";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
