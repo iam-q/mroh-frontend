@@ -10,6 +10,8 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 FROM base AS build
+ARG NEXT_PUBLIC_API_BASE
+ENV NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE}
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN pnpm run build
@@ -20,7 +22,9 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod
 
 FROM base AS runner
+ARG NEXT_PUBLIC_API_BASE
 ENV NODE_ENV=production
+ENV NEXT_PUBLIC_API_BASE=${NEXT_PUBLIC_API_BASE}
 WORKDIR /app
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=build /app/package.json ./package.json

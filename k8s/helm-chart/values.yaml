@@ -1,17 +1,20 @@
 replicaCount: 1
 
+imagePullSecrets:
+  - name: dockerhub-cred
+
 deployment:
   namespace: mroh
   
 app:
   name: frontend
   image:
-    repository: REPLACE_ME
+    repository: iamqsoh/mroh-frontend
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   port: 3000
   env:
-    NEXT_PUBLIC_API_BASE: http://mroh-data-service.mroh.svc.cluster.local
+    NEXT_PUBLIC_API_BASE: https://mroh.me/api
 
 service:
   type: ClusterIP
@@ -19,7 +22,27 @@ service:
 
 ingress:
   enabled: true
-  className: gce
-  host: app.example.com
+  className: nginx
+  host: mroh.me
   path: /
   pathType: Prefix
+  annotations: {}
+  managedCertificate:
+    enabled: false
+    name: frontend-managed-cert
+  staticIpName: ""
+  tls:
+    enabled: true
+    secretName: frontend-tls
+  api:
+    enabled: true
+    path: /api
+    serviceName: data-service
+    servicePort: 80
+
+certManager:
+  enabled: true
+  issuerName: frontend-letsencrypt
+  email: iam.qsoh@gmail.com
+  server: https://acme-v02.api.letsencrypt.org/directory
+  solverClass: nginx

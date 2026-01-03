@@ -5,6 +5,8 @@ metadata:
   namespace: {{ .Values.deployment.namespace }}
   labels:
     app: {{ .Values.app.name }}
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
 spec:
   type: {{ .Values.service.type }}
   selector:
