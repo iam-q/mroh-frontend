@@ -12,7 +12,9 @@ import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { AccountManager } from "../Navbar/AccountManager";
 import DrawerContent from "../Navbar/DrawerContent";
+import { DonationDialog } from "../../setting/DonationDialog";
 import "./MainLayout.css";
+import { DonationBanner } from "../DonationBanner";
 
 const drawerWidth = 240;
 const miniDrawerWidth = 64;
@@ -27,6 +29,7 @@ export default function MainLayout({
   const pathname = usePathname();
   const drawerOpen = pathname !== loginPath && pathname !== signupPath;
   const [open, setOpen] = useState(drawerOpen);
+  const [donationOpen, setDonationOpen] = useState(false);
 
   useEffect(() => {
     setOpen(drawerOpen);
@@ -121,10 +124,16 @@ export default function MainLayout({
               </Toolbar>
             </AppBar>
           )}
-
+          {drawerOpen && (
+            <DonationBanner setDonationOpen={setDonationOpen} />
+          )}
           <Box sx={{ flexGrow: 1 }}>{children}</Box>
         </Box>
       </Box>
+      <DonationDialog
+        open={donationOpen}
+        onClose={() => setDonationOpen(false)}
+      />
     </Box>
   );
 }
