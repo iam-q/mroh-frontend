@@ -7,12 +7,12 @@ import Snackbar from "@mui/material/Snackbar";
 import Typography from "@mui/material/Typography";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import CardContainer from "../components/CardContainer";
-import ChatInput from "../components/ChatInput";
-import ChatPanel, { Message } from "../components/ChatPanel";
-import { ChatPanelWrapper } from "../components/ChatPanel/ChatPanelWrapper";
+import CardContainer from "../components/chat/CardContainer";
+import ChatInput from "../components/chat/ChatInput";
+import ChatPanel, { Message } from "../components/chat/ChatPanel";
+import { ChatPanelWrapper } from "../components/chat/ChatPanel/ChatPanelWrapper";
+import QuickChatToggle from "../components/chat/QuickChatToggle";
 import Memoji from "../components/Memoji";
-import QuickChatToggle from "../components/QuickChatToggle";
 import { apiUrl } from "../utils/api";
 
 export default function ChatPageClient() {

@@ -1,9 +1,9 @@
 "use client";
 
-import { Box, keyframes, Typography } from "@mui/material";
+import { Alert, Box, keyframes, Snackbar, Typography } from "@mui/material";
 
 import { motion, MotionProps } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   forwardRef,
   HTMLAttributes,
@@ -12,11 +12,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { apiUrl } from "./utils/api";
-import CardContainer from "./components/CardContainer";
-import ChatInput from "./components/ChatInput";
+import CardContainer from "./components/chat/CardContainer";
+import ChatInput from "./components/chat/ChatInput";
 import CursorEffect from "./components/CursorEffect";
 import Memoji from "./components/Memoji";
+import { apiUrl } from "./utils/api";
 
 const NUM_DOTS = 8;
 
@@ -41,8 +41,10 @@ const wave = keyframes`
 export default function HomePage() {
   const [query, setQuery] = useState("");
   const [remaining, setRemaining] = useState<number | null>(null);
+  const [donationNoticeOpen, setDonationNoticeOpen] = useState(false);
   const chatsDisabled = remaining !== null && remaining <= 0;
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dotsRef = useRef<(HTMLDivElement | null)[]>(Array(NUM_DOTS).fill(null));
 
   const positions = useRef(
@@ -118,8 +120,53 @@ export default function HomePage() {
     fetchRemaining();
   }, [fetchRemaining]);
 
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+
+    if (!sessionId) return;
+
+    let active = true;
+
+    const verifyDonation = async () => {
+      try {
+        const res = await fetch(
+          `/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`,
+        );
+        if (!res.ok) {
+          throw new Error("Failed to verify donation session");
+        }
+        const data = await res.json();
+        if (active && data?.paid) {
+          setDonationNoticeOpen(true);
+        }
+      } catch {
+        // Ignore verification errors and avoid showing false success
+      } finally {
+        if (active) {
+          router.replace("/");
+        }
+      }
+    };
+
+    verifyDonation();
+
+    return () => {
+      active = false;
+    };
+  }, [router, searchParams]);
+
   return (
     <>
+      <Snackbar
+        open={donationNoticeOpen}
+        onClose={() => setDonationNoticeOpen(false)}
+        autoHideDuration={5000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity="success" sx={{ width: "100%" }}>
+          Thank you! Your donation was successful.
+        </Alert>
+      </Snackbar>
       <Box
         sx={{
           height: "80vh",

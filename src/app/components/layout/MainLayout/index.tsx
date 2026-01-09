@@ -92,9 +92,10 @@ export default function MainLayout({
               position="sticky"
               elevation={0}
               sx={{
-                backgroundColor: "#ffffff",
-                color: "inherit",
-                borderBottom: "1px solid #e0e0e0",
+                backgroundColor: "background.paper",
+                color: "text.primary",
+                borderBottom: "1px solid",
+                borderColor: "divider",
                 zIndex: 1100,
               }}
             >

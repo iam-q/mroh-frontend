@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/components/Navbar/AccountManager",
+    "src/app/components/layout/Navbar/AccountManager",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": ["node_modules"]

@@ -1,7 +1,7 @@
 "use client";
 
-import { useProfileStore } from "@/app/utils/store/profileStore";
 import { apiUrl } from "@/app/utils/api";
+import { useProfileStore } from "@/app/utils/store/profileStore";
 import { Logout } from "@mui/icons-material";
 import {
   Avatar,
@@ -16,9 +16,16 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { SettingsDialog } from "../../../setting/SettingsDialog";
+import { DonationDialog } from "../../../setting/DonationDialog";
 
 export function AccountManager() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [settingsView, setSettingsView] = React.useState<"general" | "account">(
+    "general",
+  );
+  const [donationOpen, setDonationOpen] = React.useState(false);
   const router = useRouter();
   const profile = useProfileStore((state) => state.profile);
   const avatarInitial =
@@ -30,6 +37,17 @@ export function AccountManager() {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleSettingsOpen = () => {
+    handleClose();
+    setSettingsView("general");
+    setSettingsOpen(true);
+  };
+
+  const handleDonationsOpen = () => {
+    handleClose();
+    setDonationOpen(true);
   };
 
   async function logout() {
@@ -70,7 +88,7 @@ export function AccountManager() {
             alt={profile?.username}
             // src={[0].image}
             sx={{
-              bgcolor: "#1976d2",
+              bgcolor: "primary.main",
               width: 32,
               height: 32,
               fontSize: "0.9rem",
@@ -105,7 +123,7 @@ export function AccountManager() {
                   width: 32,
                   height: 32,
                   fontSize: "0.95rem",
-                  bgcolor: "#1976d2",
+                  bgcolor: "primary.main",
                 }}
               >
                 {avatarInitial}
@@ -116,8 +134,12 @@ export function AccountManager() {
               </Box>
             </MenuItem>
 
-            <MenuItem sx={{ gap: 1 }}>Settings</MenuItem>
-            <MenuItem sx={{ gap: 1 }}>Donations</MenuItem>
+            <MenuItem sx={{ gap: 1 }} onClick={handleSettingsOpen}>
+              Settings
+            </MenuItem>
+            <MenuItem sx={{ gap: 1 }} onClick={handleDonationsOpen}>
+              Donation
+            </MenuItem>
           </MenuList>
           <Divider />
           <MenuItem sx={{ gap: 1 }} onClick={logout}>
@@ -126,6 +148,18 @@ export function AccountManager() {
           </MenuItem>
         </Stack>
       </Popover>
+
+      <SettingsDialog
+        settingsOpen={settingsOpen}
+        settingsView={settingsView}
+        setSettingsView={setSettingsView}
+        onClose={() => setSettingsOpen(false)}
+        profile={profile}
+      />
+      <DonationDialog
+        open={donationOpen}
+        onClose={() => setDonationOpen(false)}
+      />
     </Box>
   );
 }

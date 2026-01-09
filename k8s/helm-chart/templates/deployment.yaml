@@ -29,6 +29,25 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- if .Values.secrets }}
+            - name: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: {{ .Values.secrets.keys.stripePublishable }}
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: {{ .Values.secrets.keys.stripeSecret }}
+            - name: NEXT_PUBLIC_PRICE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: {{ .Values.secrets.keys.priceId }}
+            {{- end }}
           {{- end }}
           ports:
             - containerPort: {{ .Values.app.port }}
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}

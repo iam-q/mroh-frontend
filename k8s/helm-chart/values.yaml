@@ -5,16 +5,23 @@ imagePullSecrets:
 
 deployment:
   namespace: mroh
-  
+
 app:
   name: frontend
   image:
     repository: iamqsoh/mroh-frontend
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   port: 3000
   env:
     NEXT_PUBLIC_API_BASE: https://mroh.me/api
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
 
 service:
   type: ClusterIP
@@ -39,6 +46,14 @@ ingress:
     path: /api
     serviceName: data-service
     servicePort: 80
+
+secrets:
+  create: false
+  name: secret
+  keys:
+    stripePublishable: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    stripeSecret: STRIPE_SECRET_KEY
+    priceId: NEXT_PUBLIC_PRICE_ID
 
 certManager:
   enabled: true

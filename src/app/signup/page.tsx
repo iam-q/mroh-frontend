@@ -14,8 +14,6 @@ import {
   Grid2,
   Link,
   Paper,
-  MenuItem,
-  Select,
   TextField,
   Typography,
 } from "@mui/material";
@@ -28,7 +26,6 @@ const SignupPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -49,7 +46,7 @@ const SignupPage = () => {
           "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ username, email, password, role }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       if (!response.ok) {
@@ -139,24 +136,6 @@ const SignupPage = () => {
                   },
                 }}
               />
-            </FormControl>
-          </Grid2>
-          {/* Role */}
-          <Grid2 sx={{ width: "100%" }}>
-            <FormControl fullWidth>
-              <FormLabel id="role-label">Role</FormLabel>
-              <Select
-                labelId="role-label"
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                sx={{
-                  borderRadius: 30,
-                }}
-              >
-                <MenuItem value="recruiter">Recruiter</MenuItem>
-                <MenuItem value="candidate">Candidate</MenuItem>
-              </Select>
             </FormControl>
           </Grid2>
           {/* Password */}

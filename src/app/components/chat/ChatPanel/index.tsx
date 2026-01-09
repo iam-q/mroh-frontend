@@ -4,6 +4,7 @@ import { TypingBubble } from "@/app/components/TypingBubble";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
+import { useTheme } from "@mui/material/styles";
 import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -230,6 +231,7 @@ function AssistantMarkdown({ content }: { content: string }) {
 
 export default function ChatPanel({ messages, isLoading }: ChatPanelProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -241,6 +243,10 @@ export default function ChatPanel({ messages, isLoading }: ChatPanelProps) {
         const showTyping =
           isLoading && i === messages.length - 1 && msg.role === "assistant";
         const isAssistant = msg.role === "assistant";
+        const assistantBackground =
+          theme.palette.mode === "dark" ? "#15181e" : "#fcfbf9";
+        const assistantBorder =
+          theme.palette.mode === "dark" ? "#2b313a" : "#e7e1d8";
 
         // Don't render completely empty assistant messages
         if (msg.role === "assistant" && msg.content === "" && !showTyping)
@@ -261,8 +267,12 @@ export default function ChatPanel({ messages, isLoading }: ChatPanelProps) {
                 px: isAssistant ? 3 : 2,
                 py: isAssistant ? 2.5 : 1.5,
                 maxWidth: isAssistant ? "80%" : "75%",
-                backgroundColor: isAssistant ? "#fcfbf9" : "#1976d2",
-                color: isAssistant ? "#1c1c1c" : "#fff",
+                backgroundColor: isAssistant
+                  ? assistantBackground
+                  : theme.palette.primary.main,
+                color: isAssistant
+                  ? theme.palette.text.primary
+                  : theme.palette.primary.contrastText,
                 borderRadius: 3,
                 whiteSpace: "pre-wrap",
                 wordWrap: "break-word",
@@ -272,7 +282,7 @@ export default function ChatPanel({ messages, isLoading }: ChatPanelProps) {
                 gap: isAssistant ? 1.5 : 0,
                 ...(isAssistant
                   ? {
-                      border: "1px solid #e7e1d8",
+                      border: `1px solid ${assistantBorder}`,
                       boxShadow: "0 12px 26px rgba(20, 20, 20, 0.12)",
                       backgroundImage:
                         "linear-gradient(0deg, rgba(0,0,0,0.02), rgba(0,0,0,0.02))",
