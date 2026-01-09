@@ -7,6 +7,7 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import { useEffect, useState } from "react";
 
+import { apiUrl } from "../../utils/api";
 import { fetchClientSecret } from "../../utils/stripe";
 
 export default function Checkout() {
@@ -20,7 +21,7 @@ export default function Checkout() {
 
     const loadPublishableKey = async () => {
       try {
-        const res = await fetch("/api/stripe/publishable");
+        const res = await fetch(apiUrl("/stripe/publishable"));
         if (!res.ok) {
           throw new Error("Failed to fetch publishable key");
         }
