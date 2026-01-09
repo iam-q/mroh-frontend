@@ -6,7 +6,6 @@ import {
 } from "@/app/components/setting/SettingsView";
 import { useColorMode } from "@/app/components/ThemeProviderClient";
 import CloseIcon from "@mui/icons-material/Close";
-import React from "react";
 import {
   Box,
   Button,
@@ -24,6 +23,7 @@ import {
   Select,
   Typography,
 } from "@mui/material";
+import React from "react";
 import { AccountDeleteDialog } from "../AccountDeleteDialog";
 
 type SettingsDialogProps = {
@@ -145,8 +145,8 @@ export function SettingsDialog({
                           <MenuItem value="light">Light</MenuItem>
                         </Select>
                       </FormControl>
-                      }
-                    />
+                    }
+                  />
                   <Divider />
                   <SettingsRow
                     left={
@@ -186,8 +186,8 @@ export function SettingsDialog({
                           {accentColor.toUpperCase()}
                         </Typography>
                       </Box>
-                      }
-                    />
+                    }
+                  />
                 </Box>
               </SettingsView>
             ) : (

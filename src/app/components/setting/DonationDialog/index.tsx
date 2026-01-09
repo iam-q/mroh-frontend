@@ -2,14 +2,12 @@
 
 import CloseIcon from "@mui/icons-material/Close";
 import {
-  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
-  Stack,
   Typography,
 } from "@mui/material";
 import Checkout from "../../Checkout";

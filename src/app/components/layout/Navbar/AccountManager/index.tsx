@@ -16,8 +16,8 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import React from "react";
-import { SettingsDialog } from "../../../setting/SettingsDialog";
 import { DonationDialog } from "../../../setting/DonationDialog";
+import { SettingsDialog } from "../../../setting/SettingsDialog";
 
 export function AccountManager() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

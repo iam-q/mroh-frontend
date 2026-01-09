@@ -1,5 +1,7 @@
 "use client";
 
+import { apiUrl } from "@/app/utils/api";
+import { useProfileStore } from "@/app/utils/store/profileStore";
 import {
   Box,
   Button,
@@ -9,10 +11,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
 import { useRouter } from "next/navigation";
-import { apiUrl } from "@/app/utils/api";
-import { useProfileStore } from "@/app/utils/store/profileStore";
+import React from "react";
 
 export function AccountDeleteDialog({
   open,
@@ -119,7 +119,9 @@ export function AccountDeleteDialog({
           }
           sx={{ mt: 2 }}
         />
-        <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 3 }}>
+        <Box
+          sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 3 }}
+        >
           <Button onClick={onCancel} size="small">
             Cancel
           </Button>
