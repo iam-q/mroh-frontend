@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   forwardRef,
   HTMLAttributes,
+  Suspense,
   useCallback,
   useEffect,
   useRef,
@@ -37,6 +38,48 @@ const wave = keyframes`
   100% { transform: rotate(0deg); }
 `;
 
+function DonationSessionListener({ onSuccess }: { onSuccess: () => void }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+
+    if (!sessionId) return;
+
+    let active = true;
+
+    const verifyDonation = async () => {
+      try {
+        const res = await fetch(
+          `/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`,
+        );
+        if (!res.ok) {
+          throw new Error("Failed to verify donation session");
+        }
+        const data = await res.json();
+        if (active && data?.paid) {
+          onSuccess();
+        }
+      } catch {
+        // Ignore verification errors and avoid showing false success
+      } finally {
+        if (active) {
+          router.replace("/");
+        }
+      }
+    };
+
+    verifyDonation();
+
+    return () => {
+      active = false;
+    };
+  }, [onSuccess, router, searchParams]);
+
+  return null;
+}
+
 // Page
 export default function HomePage() {
   const [query, setQuery] = useState("");
@@ -44,8 +87,11 @@ export default function HomePage() {
   const [donationNoticeOpen, setDonationNoticeOpen] = useState(false);
   const chatsDisabled = remaining !== null && remaining <= 0;
   const router = useRouter();
-  const searchParams = useSearchParams();
   const dotsRef = useRef<(HTMLDivElement | null)[]>(Array(NUM_DOTS).fill(null));
+  const handleDonationSuccess = useCallback(
+    () => setDonationNoticeOpen(true),
+    [],
+  );
 
   const positions = useRef(
     Array.from({ length: NUM_DOTS }, () => ({ x: -100, y: -100 })),
@@ -120,43 +166,11 @@ export default function HomePage() {
     fetchRemaining();
   }, [fetchRemaining]);
 
-  useEffect(() => {
-    const sessionId = searchParams.get("session_id");
-
-    if (!sessionId) return;
-
-    let active = true;
-
-    const verifyDonation = async () => {
-      try {
-        const res = await fetch(
-          `/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`,
-        );
-        if (!res.ok) {
-          throw new Error("Failed to verify donation session");
-        }
-        const data = await res.json();
-        if (active && data?.paid) {
-          setDonationNoticeOpen(true);
-        }
-      } catch {
-        // Ignore verification errors and avoid showing false success
-      } finally {
-        if (active) {
-          router.replace("/");
-        }
-      }
-    };
-
-    verifyDonation();
-
-    return () => {
-      active = false;
-    };
-  }, [router, searchParams]);
-
   return (
     <>
+      <Suspense fallback={null}>
+        <DonationSessionListener onSuccess={handleDonationSuccess} />
+      </Suspense>
       <Snackbar
         open={donationNoticeOpen}
         onClose={() => setDonationNoticeOpen(false)}
