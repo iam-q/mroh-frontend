@@ -79,10 +79,12 @@ function formatAssistantMarkdown(content: string) {
 }
 
 function AssistantMarkdown({ content }: { content: string }) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
   const formatted = formatAssistantMarkdown(content);
   const bodyTextSx = {
     lineHeight: 1.8,
-    color: "#1f1f1f",
+    color: isDark ? "#e6ebf2" : "#1f1f1f",
   } as const;
 
   return (
@@ -158,10 +160,10 @@ function AssistantMarkdown({ content }: { content: string }) {
         blockquote: ({ children }) => (
           <Box
             sx={{
-              borderLeft: "3px solid #d8d1c7",
+              borderLeft: `3px solid ${isDark ? "#3b4654" : "#d8d1c7"}`,
               pl: 2,
               my: 1.5,
-              color: "#4d4d4d",
+              color: isDark ? "#c9d2de" : "#4d4d4d",
             }}
           >
             <Typography variant="body1" sx={bodyTextSx}>
@@ -182,7 +184,8 @@ function AssistantMarkdown({ content }: { content: string }) {
                   px: 0.6,
                   py: 0.1,
                   borderRadius: 1,
-                  backgroundColor: "#efebe6",
+                  backgroundColor: isDark ? "#1c2430" : "#efebe6",
+                  color: isDark ? "#e8eef7" : "inherit",
                   fontFamily:
                     "'SFMono-Regular', Consolas, 'Liberation Mono', monospace",
                   fontSize: "0.9rem",
@@ -199,7 +202,8 @@ function AssistantMarkdown({ content }: { content: string }) {
               sx={{
                 p: 2,
                 borderRadius: 2,
-                backgroundColor: "#f1ede7",
+                backgroundColor: isDark ? "#11161d" : "#f1ede7",
+                color: isDark ? "#e8eef7" : "inherit",
                 overflowX: "auto",
                 fontFamily:
                   "'SFMono-Regular', Consolas, 'Liberation Mono', monospace",
@@ -211,7 +215,14 @@ function AssistantMarkdown({ content }: { content: string }) {
             </Box>
           );
         },
-        hr: () => <Box sx={{ borderTop: "1px solid #e3ddd3", my: 2 }} />,
+        hr: () => (
+          <Box
+            sx={{
+              borderTop: `1px solid ${isDark ? "#2b3440" : "#e3ddd3"}`,
+              my: 2,
+            }}
+          />
+        ),
         strong: ({ children }) => (
           <Box component="strong" sx={{ fontWeight: 700 }}>
             {children}
@@ -244,9 +255,9 @@ export default function ChatPanel({ messages, isLoading }: ChatPanelProps) {
           isLoading && i === messages.length - 1 && msg.role === "assistant";
         const isAssistant = msg.role === "assistant";
         const assistantBackground =
-          theme.palette.mode === "dark" ? "#15181e" : "#fcfbf9";
+          theme.palette.mode === "dark" ? "#1b222c" : "#fcfbf9";
         const assistantBorder =
-          theme.palette.mode === "dark" ? "#2b313a" : "#e7e1d8";
+          theme.palette.mode === "dark" ? "#313b47" : "#e7e1d8";
 
         // Don't render completely empty assistant messages
         if (msg.role === "assistant" && msg.content === "" && !showTyping)

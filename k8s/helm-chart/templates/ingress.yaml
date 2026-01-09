@@ -64,13 +64,6 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: /api/stripe/publishable
-            pathType: Exact
-            backend:
-              service:
-                name: {{ .Values.app.name }}
-                port:
-                  number: {{ .Values.service.port }}
           - path: {{ printf "%s(/|$)(.*)" .Values.ingress.api.path }}
             pathType: ImplementationSpecific
             backend:
